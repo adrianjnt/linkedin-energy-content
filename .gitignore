@@ -1,0 +1,31 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv/
+venv/
+ENV/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+
+# Database
+*.sqlite
+*.sqlite3
+db.sqlite
+
+# Logs
+*.log
+
+# IDE projects
+.idea/
+
+# Other
+*.egg-info/
+.build/
