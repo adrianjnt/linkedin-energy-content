@@ -37,6 +37,11 @@ Create a `.env` file in the repo root (not checked in):
 ANTHROPIC_API_KEY=sk-...
 ```
 
+Or copy `.env.example` and fill in your API key:
+```powershell
+copy .env.example .env
+```
+
 ### 4) Run the scraper
 
 ```powershell
@@ -50,10 +55,27 @@ python scripts/run_scraper.py
 python scripts/generate_post.py --latest
 ```
 
-### 6) Run weekly journal spotlight
+### 6) See a demo of the prompt sent to Claude
+
+```powershell
+python scripts/demo_post_prompt.py
+```
+
+### 7) Run weekly journal spotlight
 
 ```powershell
 python scripts/weekly_spotlight.py
+```
+
+## Push to GitHub
+
+1. Create a new repo on GitHub (e.g., `linkedin-energy-content`)
+2. Add the remote and push:
+
+```powershell
+git remote add origin https://github.com/YOUR_USERNAME/linkedin-energy-content.git
+git branch -M main
+git push -u origin main
 ```
 
 ## Project Layout

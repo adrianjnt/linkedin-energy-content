@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    container_name: linkedin_energy_scraper
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    # Run scraper and exit (cron-like behavior)
+    command: python -u scripts/run_scraper.py --db data/articles.db
+
+  # Optional: web dashboard to view articles
+  # dashboard:
+  #   image: python:3.11
+  #   build: .
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     - ./data:/app/data
+  #   command: python scripts/dashboard.py
