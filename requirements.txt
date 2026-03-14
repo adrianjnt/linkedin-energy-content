@@ -1,5 +1,4 @@
 feedparser>=6.0
 requests>=2.30
 anthropic>=0.1.0
-scholarly>=2.0
 python-dotenv>=1.0
