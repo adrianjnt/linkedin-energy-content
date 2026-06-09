@@ -19,6 +19,7 @@ ENV/
 *.sqlite
 *.sqlite3
 db.sqlite
+data/*.db
 
 # Logs
 *.log

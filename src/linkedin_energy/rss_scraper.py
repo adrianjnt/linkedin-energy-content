@@ -47,7 +47,11 @@ def scrape_feeds(db_path: str, feeds: Optional[Iterable] = None) -> Dict[str, in
 
     for feed in feeds:
         logger.info("Fetching %s (%s)", feed.name, feed.url)
-        parsed = feedparser.parse(feed.url)
+        try:
+            parsed = feedparser.parse(feed.url)
+        except Exception as exc:
+            logger.warning("Error fetching feed %s: %s — skipping", feed.url, exc)
+            continue
         if parsed.bozo:
             logger.warning("Failed to parse feed %s: %s", feed.url, parsed.bozo_exception)
 

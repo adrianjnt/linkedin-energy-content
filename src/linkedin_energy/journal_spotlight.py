@@ -5,8 +5,6 @@ from __future__ import annotations
 import logging
 from typing import Dict, Optional
 
-import requests
-
 from .config import JOURNAL_SPOTLIGHT_TAG
 from .storage import ArticleRecord
 
@@ -35,20 +33,18 @@ def _normalize_spotlight_entry(entry: Dict[str, str]) -> ArticleRecord:
 
 def find_indonesian_energy_research(limit: int = 5) -> Optional[ArticleRecord]:
     """Search for Indonesian-affiliated energy research.
-    
-    This is a simplified version that looks up manual sources or API endpoints.
-    For production, integrate with SINTA API (https://sinta.ristekbrin.go.id)
-    or use Google Scholar API via a paid service.
-    
-    Currently returns None — you can add a manual list of known papers below.
-    """
-    logger.info("Searching for Indonesian energy research...")
-    
-    # TODO: Add integration with:
-    # 1. SINTA API (https://api.sinta.ristekbrin.go.id/)
-    # 2. Google Scholar via SerpAPI or similar
-    # 3. ResearchGate or Academia.edu APIs
-    
-    # For now, return None to indicate no automatic search is available
-    return None
 
+    NOT YET IMPLEMENTED. This function currently always returns None.
+
+    To implement, integrate with one of:
+      - SINTA API (https://api.sinta.ristekbrin.go.id/)
+      - Google Scholar via SerpAPI or similar
+      - ResearchGate or Academia.edu APIs
+
+    Raises:
+        NotImplementedError: Always, until an integration is added.
+    """
+    raise NotImplementedError(
+        "find_indonesian_energy_research() is not yet implemented. "
+        "Integrate with SINTA API or another academic-search provider and remove this error."
+    )

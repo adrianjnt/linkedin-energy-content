@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass
 from typing import Optional
@@ -11,13 +12,17 @@ try:
 except ImportError:  # pragma: no cover
     anthropic = None  # type: ignore[assignment]
 
+from .config import CLAUDE_MODEL, CLAUDE_MAX_TOKENS, CLAUDE_TEMPERATURE
+
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ClaudeClientConfig:
     api_key: str
-    model: str = "claude-2.1"  # Change as needed
-    max_tokens: int = 1000
-    temperature: float = 0.7
+    model: str = CLAUDE_MODEL
+    max_tokens: int = CLAUDE_MAX_TOKENS
+    temperature: float = CLAUDE_TEMPERATURE
 
 
 class ClaudeClient:
@@ -33,15 +38,16 @@ class ClaudeClient:
                 raise RuntimeError("ANTHROPIC_API_KEY is not set in the environment")
             config = ClaudeClientConfig(api_key=api_key)
 
-        self._client = anthropic.Client(api_key=config.api_key)
+        self._client = anthropic.Anthropic(api_key=config.api_key)
         self.config = config
 
     def generate(self, prompt: str) -> str:
         """Generate text using Claude."""
-        response = self._client.completions.create(
+        logger.debug("Sending prompt to Claude model %s", self.config.model)
+        response = self._client.messages.create(
             model=self.config.model,
-            prompt=prompt,
-            max_tokens_to_sample=self.config.max_tokens,
+            max_tokens=self.config.max_tokens,
             temperature=self.config.temperature,
+            messages=[{"role": "user", "content": prompt}],
         )
-        return response.completion
+        return response.content[0].text

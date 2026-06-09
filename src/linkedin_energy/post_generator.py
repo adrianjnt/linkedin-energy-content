@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+import logging
+from typing import Optional
 
 from .claude_client import ClaudeClient
 from .storage import ArticleRecord
+
+logger = logging.getLogger(__name__)
+
+MAX_POST_WORDS = 600
 
 
 def _build_prompt(article: ArticleRecord, indonesia_first: bool = True) -> str:
@@ -46,4 +51,17 @@ def generate_linkedin_post(
         client = ClaudeClient()
 
     prompt = _build_prompt(article, indonesia_first=indonesia_first)
-    return client.generate(prompt)
+    logger.info("Generating LinkedIn post for article: %s", article.title)
+    post = client.generate(prompt)
+
+    word_count = len(post.split())
+    if word_count > MAX_POST_WORDS:
+        logger.warning(
+            "Generated post exceeds %d words (got %d words). Consider shortening the output.",
+            MAX_POST_WORDS,
+            word_count,
+        )
+    else:
+        logger.info("Generated post word count: %d", word_count)
+
+    return post

@@ -12,7 +12,11 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 
 
 def main() -> None:
-    spotlight = find_indonesian_energy_research()
+    try:
+        spotlight = find_indonesian_energy_research()
+    except NotImplementedError as exc:
+        logging.error("journal_spotlight not implemented: %s", exc)
+        return
     if not spotlight:
         logging.warning("No spotlight article found. Adjust search parameters or proxy settings.")
         return

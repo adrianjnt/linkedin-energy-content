@@ -68,3 +68,8 @@ DB_PATH = "data/articles.db"
 
 # Tag used for weekly journal spotlight entries
 JOURNAL_SPOTLIGHT_TAG = "journal_spotlight"
+
+# Claude API settings
+CLAUDE_MODEL: str = "claude-3-5-haiku-20241022"
+CLAUDE_MAX_TOKENS: int = 1000
+CLAUDE_TEMPERATURE: float = 0.7
