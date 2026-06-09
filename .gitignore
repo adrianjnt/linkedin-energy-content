@@ -30,3 +30,4 @@ data/*.db
 # Other
 *.egg-info/
 .build/
+.claude/
