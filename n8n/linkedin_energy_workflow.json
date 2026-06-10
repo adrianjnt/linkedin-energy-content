@@ -1,0 +1,97 @@
+{
+  "name": "LinkedIn Energy Auto-Post",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule (Mon-Fri 9am)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/scrape",
+        "options": {}
+      },
+      "id": "scrape-feeds",
+      "name": "Scrape RSS Feeds",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/generate",
+        "options": {}
+      },
+      "id": "generate-post",
+      "name": "Generate LinkedIn Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.post }}",
+        "additionalFields": {}
+      },
+      "id": "linkedin-post",
+      "name": "Post to LinkedIn",
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "linkedin-creds",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "errorMessage": "LinkedIn Energy workflow failed. Check n8n logs."
+      },
+      "id": "error-handler",
+      "name": "Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [900, 480]
+    }
+  ],
+  "connections": {
+    "Schedule (Mon-Fri 9am)": {
+      "main": [
+        [{ "node": "Scrape RSS Feeds", "type": "main", "index": 0 }]
+      ]
+    },
+    "Scrape RSS Feeds": {
+      "main": [
+        [{ "node": "Generate LinkedIn Post", "type": "main", "index": 0 }]
+      ]
+    },
+    "Generate LinkedIn Post": {
+      "main": [
+        [{ "node": "Post to LinkedIn", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "error-handler"
+  },
+  "meta": {
+    "instanceId": "linkedin-energy-workflow"
+  }
+}

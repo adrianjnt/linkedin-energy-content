@@ -19,4 +19,4 @@ COPY .env.example .env
 RUN mkdir -p data
 
 # Default command: run the scraper
-CMD ["python", "-m", "linkedin_energy.rss_scraper"]
+CMD ["uvicorn", "scripts.api:app", "--host", "0.0.0.0", "--port", "8000"]
