@@ -12,7 +12,6 @@ services:
       - ./logs:/app/logs
     ports:
       - "8000:8000"
-    restart: unless-stopped
 
   n8n:
     image: n8nio/n8n:latest
@@ -20,15 +19,14 @@ services:
     ports:
       - "5678:5678"
     environment:
-      - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
-      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:-changeme}
-      - WEBHOOK_URL=http://localhost:5678
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD:-changeme}
+      WEBHOOK_URL: http://localhost:5678
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
       - api
-    restart: unless-stopped
 
 volumes:
   n8n_data:

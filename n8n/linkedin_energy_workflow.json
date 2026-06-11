@@ -13,9 +13,9 @@
         }
       },
       "id": "schedule-trigger",
-      "name": "Schedule (Mon-Fri 9am)",
+      "name": "Schedule (Weekdays 9am)",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.1,
+      "typeVersion": 1.2,
       "position": [240, 300]
     },
     {
@@ -24,10 +24,10 @@
         "url": "http://api:8000/scrape",
         "options": {}
       },
-      "id": "scrape-feeds",
+      "id": "scrape-node",
       "name": "Scrape RSS Feeds",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
+      "typeVersion": 4.2,
       "position": [460, 300]
     },
     {
@@ -36,42 +36,118 @@
         "url": "http://api:8000/generate",
         "options": {}
       },
-      "id": "generate-post",
+      "id": "generate-node",
       "name": "Generate LinkedIn Post",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
+      "typeVersion": 4.2,
       "position": [680, 300]
     },
     {
       "parameters": {
-        "text": "={{ $json.post }}",
-        "additionalFields": {}
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "error-check",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
       },
-      "id": "linkedin-post",
+      "id": "check-error",
+      "name": "Has Error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Pipeline error: {{ $json.error }}"
+      },
+      "id": "stop-error",
+      "name": "Stop & Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [1120, 180]
+    },
+    {
+      "parameters": {
+        "resource": "page",
+        "operation": "create",
+        "databaseId": {
+          "__rl": true,
+          "value": "47553952-8689-436a-a0cf-cb035abdb33c",
+          "mode": "id"
+        },
+        "title": "={{ $json.article_title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Status",
+              "selectValue": "Draft"
+            },
+            {
+              "key": "Topic",
+              "textValue": "={{ $json.article_url }}"
+            },
+            {
+              "key": "Date",
+              "dateValue": "={{ $now.toISOString().split('T')[0] }}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "paragraph",
+              "textContent": "={{ $json.post }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "notion-node",
+      "name": "Save to Notion",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1120, 420],
+      "credentials": {
+        "notionApi": {
+          "id": "notion-creds",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "person": "={{ $json.person_urn }}",
+        "text": "={{ $json.post }}"
+      },
+      "id": "linkedin-node",
       "name": "Post to LinkedIn",
       "type": "n8n-nodes-base.linkedIn",
       "typeVersion": 1,
-      "position": [900, 300],
+      "position": [1340, 420],
       "credentials": {
         "linkedInOAuth2Api": {
           "id": "linkedin-creds",
           "name": "LinkedIn account"
         }
       }
-    },
-    {
-      "parameters": {
-        "errorMessage": "LinkedIn Energy workflow failed. Check n8n logs."
-      },
-      "id": "error-handler",
-      "name": "Error",
-      "type": "n8n-nodes-base.stopAndError",
-      "typeVersion": 1,
-      "position": [900, 480]
     }
   ],
   "connections": {
-    "Schedule (Mon-Fri 9am)": {
+    "Schedule (Weekdays 9am)": {
       "main": [
         [{ "node": "Scrape RSS Feeds", "type": "main", "index": 0 }]
       ]
@@ -83,15 +159,28 @@
     },
     "Generate LinkedIn Post": {
       "main": [
+        [{ "node": "Has Error?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Has Error?": {
+      "main": [
+        [{ "node": "Stop & Error", "type": "main", "index": 0 }],
+        [{ "node": "Save to Notion", "type": "main", "index": 0 }]
+      ]
+    },
+    "Save to Notion": {
+      "main": [
         [{ "node": "Post to LinkedIn", "type": "main", "index": 0 }]
       ]
     }
   },
+  "active": false,
   "settings": {
-    "executionOrder": "v1",
-    "errorWorkflow": "error-handler"
+    "executionOrder": "v1"
   },
+  "versionId": "1",
   "meta": {
-    "instanceId": "linkedin-energy-workflow"
-  }
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
 }
